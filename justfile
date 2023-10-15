@@ -1,2 +1,2 @@
-all:
+run:
 	sbcl --script main.lisp

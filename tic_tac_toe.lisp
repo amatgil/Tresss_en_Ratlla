@@ -38,8 +38,42 @@
      (switch-turn))
     (format t "Espai ja ocupat!~%"))))
 
+(defmacro comprovar-files (tiles)
+  "Genera el codi que compara els elements de cada fila entre ells"
+  (or
+   (dotimes (i +board-width+) 
+    (and
+      (eql (elt tiles (+ 0 (* i +board-width+))) (elt tiles (+ 1 (* i +board-width+))))
+      (eql (elt tiles (+ 1 (* i +board-width+))) (elt tiles (+ 2 (* i +board-width+))))
+      (not (eql (elt tiles (* i +board-width+)) :empty))))))
+          
+;(macroexpand-1 `(or
+;                 ,(dotimes (i +board-width+) 
+;                   (and
+;                    (eql (elt tiles (+ 0 (* i +board-width+))) (elt tiles (+ 1 (* i +board-width+))))
+;                    (eql (elt tiles (+ 1 (* i +board-width+))) (elt tiles (+ 2 (* i +board-width+))))
+;                    (not (eql (elt espais (* i +board-width+)) :empty))))))
+   
 (defmethod check-victory ((b board))
-  (print "hi"))
+  (with-slots (espais) b
+   (or
+    (comprovar-files espais))))
+     
+;(defmethod check-victory ((b board))
+;  (with-slots (espais) b
+;   (or
+;    (and
+;     (eql (elt espais (+ 0 (* 0 +board-width+))) (elt espais (+ 1 (* 0 +board-width+))))
+;     (eql (elt espais (+ 1 (* 0 +board-width+))) (elt espais (+ 2 (* 0 +board-width+))))
+;     (not (eql (elt espais (* 0 +board-width+)) :empty)))
+;    (and
+;     (eql (elt espais (+ 0 (* 1 +board-width+))) (elt espais (+ 1 (* 1 +board-width+))))
+;     (eql (elt espais (+ 1 (* 1 +board-width+))) (elt espais (+ 2 (* 1 +board-width+))))
+;     (not (eql (elt espais (* 1 +board-width+)) :empty)))
+;    (and
+;     (eql (elt espais (+ 0 (* 2 +board-width+))) (elt espais (+ 1 (* 2 +board-width+))))
+;     (eql (elt espais (+ 1 (* 2 +board-width+))) (elt espais (+ 2 (* 2 +board-width+))))
+;     (not (eql (elt espais (* 2 +board-width+)) :empty))))))
   
 (defun switch-turn ()
   (if (eql *turn* :cross)
@@ -59,8 +93,10 @@
 ;;; The "Main" starts here
 (defparameter *game-board* (make-instance 'board))
 
+
 (print-board *game-board*)
 (format t "Li toca a: ~w~%" (estat->char *turn*))
+ 
 
 (loop
   do (let ((input (get-input)))
@@ -77,6 +113,7 @@
          (format t "Li toca a: ~w~%" (estat->char *turn*))))
        (when (check-victory *game-board*) 
         (progn
+         (switch-turn) ;ens hem passat!
          (format t "La partida ha acabat! Han guanyat: les ~as!~%" (estat->char *turn*))
          (return)))))
          
