@@ -38,14 +38,13 @@
      (switch-turn))
     (format t "Space already occupied!~%"))))
 
-(defmacro check-rows (tiles)
+(defmacro check-rows (spaces)
   "Generates the code that checks each of the row's elements amongst themselves"
-  (or
-   (dotimes (i +board-width+) 
-    (and
-      (eql (elt tiles (+ 0 (* i +board-width+))) (elt tiles (+ 1 (* i +board-width+))))
-      (eql (elt tiles (+ 1 (* i +board-width+))) (elt tiles (+ 2 (* i +board-width+))))
-      (not (eql (elt tiles (* i +board-width+)) :empty))))))
+   (dotimes (i +board-width+)
+     (and
+      `(eql (elt ,spaces (+ 0 (* ,i ,+board-width+))) (elt ,spaces (+ 1 (* ,i ,+board-width+))))
+      `(eql (elt ,spaces (+ 1 (* ,i ,+board-width+))) (elt ,spaces (+ 2 (* ,i ,+board-width+))))
+      `(not (eql (elt ,spaces (* ,i ,+board-width+)) :empty)))))
           
 ;(macroexpand-1 `(or
 ;                 ,(dotimes (i +board-width+) 
@@ -54,12 +53,11 @@
 ;                    (eql (elt tiles (+ 1 (* i +board-width+))) (elt tiles (+ 2 (* i +board-width+))))
 ;                    (not (eql (elt spaces (* i +board-width+)) :empty))))))
    
-;(defmethod check-victory-m ((b board))
-;  (with-slots (spaces) b
-;   (or
-;    (check-rows spaces))))
-     
 (defmethod check-victory ((b board))
+  (with-slots (spaces) b
+    (check-rows spaces)))
+     
+(defmethod check-victory-manual ((b board))
   (with-slots (spaces) b
    (or
     (and
